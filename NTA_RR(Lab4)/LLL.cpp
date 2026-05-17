@@ -81,7 +81,7 @@ void GSh(const LatticeBasis& B, int n, vector<vector<double>>& mu, vector<double
 
 void LLL(LatticeBasis& B, int n, double delta)
 {
-    vector<vector<double>> mu(n, std::vector<double>(n, 0.0));
+    vector<vector<double>> mu(n, vector<double>(n, 0.0));
     vector<double> b_(n, 0.0);
 
     GSh(B, n, mu, b_);
@@ -111,4 +111,43 @@ void LLL(LatticeBasis& B, int n, double delta)
             k = max(1, k - 1);
         }
     }
+}
+
+double trikutnik(const LatticeBasis& B, int n)
+{
+    vector<vector<double>> mu(n, vector<double>(n, 0.0));
+    vector<double> b_(n, 0.0);
+
+    GSh(B, n, mu, b_);
+
+    double det = 1.0;
+    for (int i = 0; i < n; ++i)
+    {
+        det *= b_[i];
+    }
+
+    return det;
+}
+
+double big_prod(const LatticeBasis& B, int n)
+{
+    double rez = 1;
+    for (int i = 0; i < n; i++)
+    {
+        rez *= sqrt(B.dot_product(i, i));
+    }
+    return rez;
+}
+
+double Adamar(const LatticeBasis& B, int n)
+{
+    double det = trikutnik(B, n);
+
+    double ob = std::sqrt(det);
+
+    double bb = big_prod(B, n);
+
+    double H = ob / bb;
+
+    return pow(H, 1.0 / n);
 }

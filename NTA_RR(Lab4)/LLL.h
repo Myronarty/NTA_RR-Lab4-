@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 using namespace std;
 
@@ -31,3 +32,9 @@ bool chek_min(double mu);
 void GSh(const LatticeBasis& B, int n, vector<vector<double>>& mu, vector<double>& b_);
 
 void LLL(LatticeBasis& B, int n, double delta = 0.75);
+
+double trikutnik(const LatticeBasis& B, int n);
+
+double big_prod(const LatticeBasis& B, int n);
+
+double Adamar(const LatticeBasis& B, int n);
