@@ -22,9 +22,11 @@ public:
     void reduce_vector(int k, int j, int64_t q);
 
     int64_t dot_product(int i, int j) const;
-
-    double comput_mu(int i, int j) const;
 };
+
+bool chek_lovas(const vector<double>& b_, double mu_i_prev, int i, double delta = 0.75);
+
+bool chek_min(double mu);
 
 void GSh(const LatticeBasis& B, int n, vector<vector<double>>& mu, vector<double>& b_);
 

@@ -15,9 +15,9 @@ void LatticeBasis::swap_rows(int row1, int row2)
 
 void LatticeBasis::reduce_vector(int k, int j, int64_t q)
 {
-    for (int k = 0; k < n; ++k)
+    for (int t = 0; t < n; t++)
     {
-        b[k * n + k] -= q * b[j * n + k];
+        b[k * n + t] -= q * b[j * n + t];
     }
 }
 
@@ -31,11 +31,6 @@ int64_t LatticeBasis::dot_product(int i, int j) const
     return sum;
 }
 
-double LatticeBasis::comput_mu(int i, int j) const
-{
-    return double(dot_product(i, j)) / dot_product(i, i);
-}
-
 int64_t ocruglenie(double mu)
 {
     if (mu >= 0.0)
@@ -46,6 +41,16 @@ int64_t ocruglenie(double mu)
     {
         return int64_t(mu - 0.5);
     }
+}
+
+bool chek_lovas(const vector<double>& b_, double mu, int i, double delta)
+{
+    return b_[i] >= (delta - (mu * mu)) * b_[i - 1];
+}
+
+bool chek_min(double mu)
+{
+    return abs(mu) > 0.5;
 }
 
 void GSh(const LatticeBasis& B, int n, vector<vector<double>>& mu, vector<double>& b_)
@@ -74,8 +79,36 @@ void GSh(const LatticeBasis& B, int n, vector<vector<double>>& mu, vector<double
     }
 }
 
-void LLL(LatticeBasis& B, int n, double delta = 0.75)
+void LLL(LatticeBasis& B, int n, double delta)
 {
     vector<vector<double>> mu(n, std::vector<double>(n, 0.0));
     vector<double> b_(n, 0.0);
+
+    GSh(B, n, mu, b_);
+
+    int k = 1;
+    while (k < n)
+    {
+        for (int j = k - 1; j > -1; j--)
+        {
+            if (chek_min(mu[k][j]))
+            {
+                int64_t q = std::round(mu[k][j]);
+                B.reduce_vector(k, j, q);
+
+                GSh(B, n, mu, b_);
+            }
+        }
+
+        if (chek_lovas(b_, mu[k][k - 1], k, delta))
+        {
+            k++;
+        }
+        else
+        {
+            B.swap_rows(k, k - 1);
+            GSh(B, n, mu, b_);
+            k = max(1, k - 1);
+        }
+    }
 }
